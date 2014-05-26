@@ -9,9 +9,9 @@ make %BASE_PARAMS% BUILD_DIR=_UltimakerMarlin_115200 DEFINES="'VERSION_PROFILE=\
 make %BASE_PARAMS% BUILD_DIR=_UltimakerMarlin_Dual_250000 DEFINES="'VERSION_PROFILE=\"250000_dual\"' BAUDRATE=250000 TEMP_SENSOR_1=-1 EXTRUDERS=2"
 make %BASE_PARAMS% BUILD_DIR=_UltimakerMarlin_Dual_115200 DEFINES="'VERSION_PROFILE=\"115200_dual\"' BAUDRATE=115200 TEMP_SENSOR_1=-1 EXTRUDERS=2"
 
-copy _UltimakerMarlin_250000\Marlin.hex MarlinUltimaker-250000.hex
-copy _UltimakerMarlin_115200\Marlin.hex MarlinUltimaker-115200.hex
-copy _UltimakerMarlin_Dual_250000\Marlin.hex MarlinUltimaker-250000-dual.hex
-copy _UltimakerMarlin_Dual_115200\Marlin.hex MarlinUltimaker-115200-dual.hex
+copy _UltimakerMarlin_250000\Marlin.hex MarlinUltimaker-HBK-250000.hex
+copy _UltimakerMarlin_115200\Marlin.hex MarlinUltimaker-HBK-115200.hex
+copy _UltimakerMarlin_Dual_250000\Marlin.hex MarlinUltimaker-HBK-250000-dual.hex
+copy _UltimakerMarlin_Dual_115200\Marlin.hex MarlinUltimaker-HBK-115200-dual.hex
 
 pause
