@@ -82,7 +82,7 @@
 // 88 = 5DPrint D8 Driver Board
 
 #ifndef MOTHERBOARD
-#define MOTHERBOARD 7
+#define MOTHERBOARD 72
 #endif
 
 // Define this to set a custom name for your generic Mendel,
@@ -143,7 +143,7 @@
 // 147 is Pt100 with 4k7 pullup
 // 110 is Pt100 with 1k pullup (non standard)
 
-#define TEMP_SENSOR_0 -1
+#define TEMP_SENSOR_0 20
 #ifndef TEMP_SENSOR_1
 #define TEMP_SENSOR_1 0
 #endif
