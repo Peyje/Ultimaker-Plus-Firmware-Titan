@@ -1098,6 +1098,37 @@ int16_t SdBaseFile::read(void* buf, uint16_t nbyte) {
   return -1;
 }
 //------------------------------------------------------------------------------
+/** Convert an UTF-16 character in plain ASCII
+* It is brute conversion:
+*  - Only 0x00xx characters are considered
+*  - Double word characters are not handled (Will generate "?x")
+*  - Accents are stripped (é->e, ü->u, ...)
+*  - All other (non-LCD printable) characers are replaced by ?
+*/
+char SdBaseFile::utf16Ascii(uint16_t utf) {
+  uint8_t asc;
+  // Very simple mapping to plain ascii for characters between 0x00c0 - 0x00ff
+  //      "0123456789ABCDFF0123456789ABCDEF"
+  // 0xc0 "AAAAAAACEEEEIIIIDNOOOOOxOUUUUYTB"
+  // 0xe0 "aaaaaaaceeeeiiiidnooooo/ouuuuyty"
+  PGM_P p = PSTR("AAAAAAACEEEEIIIIDNOOOOOxOUUUUYTBaaaaaaaceeeeiiiidnooooo/ouuuuyty");
+
+  // Immediately throw away what is not 8bits, this is not printable
+  // Note that we ignore double word UTF16, they should be rare and we sanitize anyway
+  if ( utf >> 8 ) return '?';
+
+  asc = utf & 0xff;
+
+  // Accept Null or pure ascii
+  if (asc == 0 || (asc >= 0x20 && asc < 0x7e)) return asc;
+
+  // Ignore control and non (LCD) printable characters
+  if (asc < 0xc0) return '?';
+
+  // Remains 0xc0 - 0xff that we can map
+  return pgm_read_byte(p + asc - 0xc0);
+}
+//------------------------------------------------------------------------------
 /** Read the next directory entry from a directory file.
  *
  * \param[out] dir The dir_t struct that will receive the data.
@@ -1136,19 +1167,19 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
     	{
 			//TODO: Store the filename checksum to verify if a none-long filename aware system modified the file table.
     		n = ((VFAT->sequenceNumber & 0x1F) - 1) * 13;
-			longFilename[n+0] = VFAT->name1[0];
-			longFilename[n+1] = VFAT->name1[1];
-			longFilename[n+2] = VFAT->name1[2];
-			longFilename[n+3] = VFAT->name1[3];
-			longFilename[n+4] = VFAT->name1[4];
-			longFilename[n+5] = VFAT->name2[0];
-			longFilename[n+6] = VFAT->name2[1];
-			longFilename[n+7] = VFAT->name2[2];
-			longFilename[n+8] = VFAT->name2[3];
-			longFilename[n+9] = VFAT->name2[4];
-			longFilename[n+10] = VFAT->name2[5];
-			longFilename[n+11] = VFAT->name3[0];
-			longFilename[n+12] = VFAT->name3[1];
+			longFilename[n+0] = utf16Ascii(VFAT->name1[0]);
+			longFilename[n+1] = utf16Ascii(VFAT->name1[1]);
+			longFilename[n+2] = utf16Ascii(VFAT->name1[2]);
+			longFilename[n+3] = utf16Ascii(VFAT->name1[3]);
+			longFilename[n+4] = utf16Ascii(VFAT->name1[4]);
+			longFilename[n+5] = utf16Ascii(VFAT->name2[0]);
+			longFilename[n+6] = utf16Ascii(VFAT->name2[1]);
+			longFilename[n+7] = utf16Ascii(VFAT->name2[2]);
+			longFilename[n+8] = utf16Ascii(VFAT->name2[3]);
+			longFilename[n+9] = utf16Ascii(VFAT->name2[4]);
+			longFilename[n+10] = utf16Ascii(VFAT->name2[5]);
+			longFilename[n+11] = utf16Ascii(VFAT->name3[0]);
+			longFilename[n+12] = utf16Ascii(VFAT->name3[1]);
 			//If this VFAT entry is the last one, add a NUL terminator at the end of the string
 			if (VFAT->sequenceNumber & 0x40)
 				longFilename[n+13] = '\0';
