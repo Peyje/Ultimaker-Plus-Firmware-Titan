@@ -1102,16 +1102,21 @@ int16_t SdBaseFile::read(void* buf, uint16_t nbyte) {
 * It is brute conversion:
 *  - Only 0x00xx characters are considered
 *  - Double word characters are not handled (Will generate "?x")
-*  - Accents are stripped (é->e, ü->u, ...)
+*  - Accents not available on the display are stripped (é->e, à->a, ...)
 *  - All other (non-LCD printable) characers are replaced by ?
 */
 char SdBaseFile::utf16Ascii(uint16_t utf) {
   uint8_t asc;
   // Very simple mapping to plain ascii for characters between 0x00c0 - 0x00ff
-  //      "0123456789ABCDFF0123456789ABCDEF"
-  // 0xc0 "AAAAAAACEEEEIIIIDNOOOOOxOUUUUYTB"
-  // 0xe0 "aaaaaaaceeeeiiiidnooooo/ouuuuyty"
-  PGM_P p = PSTR("AAAAAAACEEEEIIIIDNOOOOOxOUUUUYTBaaaaaaaceeeeiiiidnooooo/ouuuuyty");
+  //      "01234.....56789ABCDFF01.....23456.....7.....89ABC.....DEF"
+  // 0xc0 "AAAA\xe1""AACEEEEIIIID\xee""OOOO\xef""x"   "OUUU\xf5""YT\xe2"
+  // 0xe0 "aaaa\xe1""aaceeeeiiiid\xee""oooo\xef""\xfd""ouuu\xf5""yty"
+  // We only map for the UltiController / Hitachi display, the DOGLCD does have 
+  //  special characters
+#ifndef DOGLCD
+  PGM_P p = PSTR("AAAA\xe1""AACEEEEIIIID\xee""OOOO\xef""x"   "OUUU\xf5""YT\xe2"
+                 "aaaa\xe1""aaceeeeiiiid\xee""oooo\xef""\xfd""ouuu\xf5""yty");
+#endif
 
   // Immediately throw away what is not 8bits, this is not printable
   // Note that we ignore double word UTF16, they should be rare and we sanitize anyway
@@ -1126,7 +1131,11 @@ char SdBaseFile::utf16Ascii(uint16_t utf) {
   if (asc < 0xc0) return '?';
 
   // Remains 0xc0 - 0xff that we can map
+#ifdef DOGLCD
+  return asc;
+#else
   return pgm_read_byte(p + asc - 0xc0);
+#endif
 }
 //------------------------------------------------------------------------------
 /** Read the next directory entry from a directory file.
