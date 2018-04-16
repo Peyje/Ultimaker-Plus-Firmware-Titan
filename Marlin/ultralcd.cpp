@@ -567,13 +567,6 @@ static void lcd_home()
 }
 
 
-// Push in the filament until close to the hotend
-// Only use when filament is not yet loaded, or damage might occur!
-static void einziehen() {
-	enquecommand_P(PSTR("G92 E0"));
-	enquecommand_P(PSTR("G0 E740"));
-}
-
 
 // Push in the filament until close to the hotend
 // Only use when filament is not yet loaded, or damage might occur!
@@ -593,11 +586,12 @@ static void lcd_quick_access_menu() {
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN,lcd_main_menu);
 	MENU_ITEM(function, "Einziehen (!)", einziehen);
-  MENU_ITEM(function, "Ausziehen", ausziehen);
-  #if TEMP_SENSOR_0 != 0
-    MENU_ITEM(function, MSG_PREHEAT_PLA, lcd_preheat_pla0);
-  #endif
-  END_MENU();
+  	MENU_ITEM(function, "Ausziehen", ausziehen);
+  	#if TEMP_SENSOR_0 != 0
+    	MENU_ITEM(function, MSG_PREHEAT_PLA, lcd_preheat_pla0);
+  	#endif
+    MENU_ITEM(function, "Ich putz hier nur", clearNozzle);
+  	END_MENU();
 }
 
 
@@ -791,11 +785,9 @@ static void lcd_move_menu_axis()
     MENU_ITEM(back, MSG_MOVE_AXIS, lcd_move_menu);
     MENU_ITEM(submenu, MSG_MOVE_X, lcd_move_x);
     MENU_ITEM(submenu, MSG_MOVE_Y, lcd_move_y);
-    if (move_menu_scale < 10.0)
-    {
-        MENU_ITEM(submenu, MSG_MOVE_Z, lcd_move_z);
-        MENU_ITEM(submenu, MSG_MOVE_E, lcd_move_e);
-    }
+    MENU_ITEM(submenu, MSG_MOVE_Z, lcd_move_z);
+    MENU_ITEM(submenu, MSG_MOVE_E, lcd_move_e);
+
     END_MENU();
 }
 

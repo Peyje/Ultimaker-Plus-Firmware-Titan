@@ -3626,3 +3626,26 @@ bool setTargetedHotend(int code){
   return false;
 }
 
+// Same as runout prevention, but press out more filament
+void clearNozzle() {
+  if(degHotend(active_extruder) < 170)
+  {
+    SERIAL_ECHO_START;
+    SERIAL_ECHOLNPGM(MSG_ERR_COLD_EXTRUDE_STOP);
+  }
+  else {
+    bool oldstatus=READ(E0_ENABLE_PIN);
+    enable_e0();
+    float oldepos=current_position[E_AXIS];
+    float oldedes=destination[E_AXIS];
+    plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS],
+                      destination[E_AXIS]+EXTRUDER_RUNOUT_EXTRUDE*100/axis_steps_per_unit[E_AXIS], //Same as runout prevention but longer (100mm)
+                      EXTRUDER_RUNOUT_SPEED/60.*100/axis_steps_per_unit[E_AXIS], active_extruder);
+    current_position[E_AXIS]=oldepos;
+    destination[E_AXIS]=oldedes;
+    plan_set_e_position(oldepos);
+    previous_millis_cmd=millis();
+    st_synchronize();
+    WRITE(E0_ENABLE_PIN,oldstatus);
+  }
+}
