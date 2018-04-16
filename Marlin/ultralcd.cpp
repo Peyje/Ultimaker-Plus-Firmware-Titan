@@ -564,10 +564,24 @@ static void lcd_home()
     enquecommand_P(PSTR("M84 X0 Y0"));
 }
 
+
+static void einziehen() {
+	enquecommand_P(PSTR("G92 E0"));
+	enquecommand_P(PSTR("G0 E740"));
+}
+
+static void ausziehen() {
+  enquecommand_P(PSTR("G92 E0"));
+  enquecommand_P(PSTR("G0 E-800"));
+}
+
+
 static void lcd_prepare_menu()
 {
     START_MENU();
     MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+    MENU_ITEM(function, "Einziehen", einziehen);
+    MENU_ITEM(function, "Ausziehen", ausziehen);
 #ifdef SDSUPPORT
     #ifdef MENU_ADDAUTOSTART
       MENU_ITEM(function, MSG_AUTOSTART, lcd_autostart_sd);
