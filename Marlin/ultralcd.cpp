@@ -49,6 +49,7 @@ static void lcd_status_screen();
 extern bool powersupply;
 static void lcd_main_menu();
 static void lcd_tune_menu();
+static void lcd_quick_access_menu();
 static void lcd_prepare_menu();
 static void lcd_prepare_move_z();
 static void lcd_move_menu();
@@ -265,6 +266,7 @@ static void lcd_main_menu()
 {
     START_MENU();
     MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
+    MENU_ITEM(submenu, "Quick Access", lcd_quick_access_menu);
     if (movesplanned() || IS_SD_PRINTING)
     {
         MENU_ITEM(submenu, MSG_TUNE, lcd_tune_menu);
@@ -565,14 +567,37 @@ static void lcd_home()
 }
 
 
+// Push in the filament until close to the hotend
+// Only use when filament is not yet loaded, or damage might occur!
 static void einziehen() {
 	enquecommand_P(PSTR("G92 E0"));
 	enquecommand_P(PSTR("G0 E740"));
 }
 
+
+// Push in the filament until close to the hotend
+// Only use when filament is not yet loaded, or damage might occur!
+static void einziehen() {
+	enquecommand_P(PSTR("G92 E0"));
+	enquecommand_P(PSTR("G0 E740"));
+}
+
+// Push out the filament
 static void ausziehen() {
   enquecommand_P(PSTR("G92 E0"));
   enquecommand_P(PSTR("G0 E-800"));
+}
+
+// A screen with most commonly used functions
+static void lcd_quick_access_menu() {
+	START_MENU();
+	MENU_ITEM(back, MSG_MAIN,lcd_main_menu);
+	MENU_ITEM(function, "Einziehen (!)", einziehen);
+  MENU_ITEM(function, "Ausziehen", ausziehen);
+  #if TEMP_SENSOR_0 != 0
+    MENU_ITEM(function, MSG_PREHEAT_PLA, lcd_preheat_pla0);
+  #endif
+  END_MENU();
 }
 
 
@@ -580,8 +605,6 @@ static void lcd_prepare_menu()
 {
     START_MENU();
     MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-    MENU_ITEM(function, "Einziehen", einziehen);
-    MENU_ITEM(function, "Ausziehen", ausziehen);
 #ifdef SDSUPPORT
     #ifdef MENU_ADDAUTOSTART
       MENU_ITEM(function, MSG_AUTOSTART, lcd_autostart_sd);
