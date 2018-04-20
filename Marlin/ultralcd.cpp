@@ -43,6 +43,11 @@ char lcd_status_message[LCD_WIDTH+1] = WELCOME_MSG;
 void copy_and_scalePID_i();
 void copy_and_scalePID_d();
 
+#if defined(LED_PIN) && LED_PIN > -1
+void set_ledPwm();
+#endif
+
+
 /* Different menus */
 static void lcd_status_screen();
 #ifdef ULTIPANEL
@@ -578,7 +583,13 @@ static void einziehen() {
 // Push out the filament
 static void ausziehen() {
   enquecommand_P(PSTR("G92 E0"));
-  enquecommand_P(PSTR("G0 E-800"));
+  enquecommand_P(PSTR("G0 E-700"));
+}
+
+// Push out the filament
+static void auswerfen() {
+  enquecommand_P(PSTR("G92 E0"));
+  enquecommand_P(PSTR("G0 E-100"));
 }
 
 // A screen with most commonly used functions
@@ -587,10 +598,15 @@ static void lcd_quick_access_menu() {
 	MENU_ITEM(back, MSG_MAIN,lcd_main_menu);
 	MENU_ITEM(function, "Einziehen (!)", einziehen);
   	MENU_ITEM(function, "Ausziehen", ausziehen);
+    MENU_ITEM(function, "Auswerfen", auswerfen);
   	#if TEMP_SENSOR_0 != 0
-    	MENU_ITEM(function, MSG_PREHEAT_PLA, lcd_preheat_pla0);
+    	MENU_ITEM(function, "PLA Einheizen", lcd_preheat_pla0);
   	#endif
     MENU_ITEM(function, "Ich putz hier nur", clearNozzle);
+    #if defined(LED_PIN) && LED_PIN > -1
+        // LED Brightness
+        MENU_ITEM_EDIT_CALLBACK(int3, "Let it shine!", &ledPwm, 0, 255, set_ledPwm);
+    #endif
   	END_MENU();
 }
 
@@ -1711,5 +1727,14 @@ void copy_and_scalePID_d()
   updatePID();
 #endif
 }
+
+// LED Brightness
+#if defined(LED_PIN) && LED_PIN > -1
+void set_ledPwm()
+{
+  pinMode(LED_PIN, OUTPUT);
+  analogWrite(LED_PIN, ledPwm);
+}
+#endif
 
 #endif //ULTRA_LCD

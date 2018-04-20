@@ -249,4 +249,10 @@ extern void digipot_i2c_set_current( int channel, float current );
 extern void digipot_i2c_init();
 #endif
 
+// LED Brightness
+#if defined(LED_PIN) && LED_PIN > -1
+extern int ledPwm;
+extern bool ledInit;
+#endif
+
 #endif

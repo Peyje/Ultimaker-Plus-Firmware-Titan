@@ -258,6 +258,13 @@ int EtoPPressure=0;
   #endif
 #endif
 
+    // LED Brightness
+#if defined(LED_PIN) && LED_PIN > -1
+  int ledPwm=0;
+  bool ledInit=false;
+#endif
+
+
 #ifdef DELTA
   float delta[3] = {0.0, 0.0, 0.0};
   #define SIN_60 0.8660254037844386
@@ -518,8 +525,19 @@ void setup()
   servo_init();
 
   lcd_init();
-  _delay_ms(1000);	// wait 1sec to display the splash screen
 
+  #if defined(LED_PIN) && LED_PIN > -1
+    // Bring led to saved brigtness in 1 sec
+    pinMode(LED_PIN, OUTPUT);
+    for(uint8_t i = 0; i <= 100; i++) {
+      analogWrite(LED_PIN, ledPwm * i / 100);
+      _delay_ms(10);
+    }
+    ledInit = true;
+  #else
+    _delay_ms(1000);  // wait 1sec to display the splash screen
+  #endif
+  
   #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
     SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
   #endif
@@ -527,7 +545,7 @@ void setup()
   #ifdef DIGIPOT_I2C
     digipot_i2c_init();
   #endif
-}
+  }
 
 
 void loop()
@@ -1808,6 +1826,11 @@ void process_commands()
       #if defined(FAN_PIN) && FAN_PIN > -1
         if (pin_number == FAN_PIN)
           fanSpeed = pin_status;
+      #endif
+        // LED Brightness
+      #if defined(LED_PIN) && LED_PIN > -1
+        if (pin_number == LED_PIN)
+          ledPwm = pin_status;
       #endif
         if (pin_number > -1)
         {
