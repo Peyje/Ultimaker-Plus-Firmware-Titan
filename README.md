@@ -1,3 +1,23 @@
+## This is the firmware for the Ultimaker Original+, personalized to my printer and extended with some added features.
+
+It is a fork of the [official Ultimaker firmware](https://github.com/Ultimaker/Marlin) and uses some snippets of another fork by [Amedee](https://github.com/AmedeeBulle/Marlin).
+
+### WARNING! The safety features PREVENT_LENGTHY_EXTRUDE and PREVENT_COLD_EXTRUDE are both disabled! Flash and use at your own risk.
+
+Features and things I changed in the newest version:
+* Added support for the Titan Extruder
+    * Added functions to push the filament in and out at a faster rate than default and until reaching the hotend
+    * Added a function to clean the nozzle by pushing 30mm of filament out
+* Changed the display timeout to 1 minute
+* Added LED support (I added and changed the code of Amedee)
+* Added a "Quick Access" menu with my most used functions 
+
+Right now my functions only have german names, if wanted I will gladly add translations to various languages.
+
+
+## Original README starts below this line.
+
+
 ==========================
 Marlin 3D Printer Firmware
 ==========================
