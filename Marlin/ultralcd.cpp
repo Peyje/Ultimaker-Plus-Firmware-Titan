@@ -601,6 +601,7 @@ static void lcd_quick_access_menu() {
     MENU_ITEM(function, "Auswerfen", auswerfen);
   	#if TEMP_SENSOR_0 != 0
     	MENU_ITEM(function, "PLA Einheizen", lcd_preheat_pla0);
+        MENU_ITEM(function, "ABS Einheizen", lcd_preheat_abs0);
   	#endif
     MENU_ITEM(function, "Ich putz hier nur", clearNozzle);
     #if defined(LED_PIN) && LED_PIN > -1
