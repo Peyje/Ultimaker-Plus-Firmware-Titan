@@ -341,7 +341,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // Travel limits after homing
 #define X_MAX_POS 210
 #define X_MIN_POS 0
-#define Y_MAX_POS 160 // DOUBLE FAN IS BIGGER
+#define Y_MAX_POS 210
 #define Y_MIN_POS 0
 #define Z_MAX_POS 210
 #define Z_MIN_POS 0
